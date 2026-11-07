@@ -22,7 +22,7 @@ git clone https://github.com/cutamar/claude-skills ~/claude-skills
 ~/claude-skills/install.sh --panel      # --panel also installs the progress panel mod
 ```
 
-Running sessions pick up the agents after a restart.
+Running sessions pick up the agents after a restart, and the panel after `/reload-plugins`.
 
 **Requirements:** Linux, [Claude Code](https://code.claude.com) 2.1.3xx or newer,
 Python 3.11+, `jq`.
