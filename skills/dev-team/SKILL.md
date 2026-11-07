@@ -53,6 +53,10 @@ planner, reviewer, security-reviewer, implementer, debugger and test-engineer ke
 - Don't paste memory contents into dispatches; each agent already sees its own notes.
 
 ## Steps
+0. **Git setup.** Worktree isolation, `BASE` and review ranges all need a git repo with at least one commit. Check with `git rev-parse --verify HEAD`. If it fails:
+   - Not a repo → `git init`.
+   - No commits yet → add a `.gitignore` for the stack if there is none (build output, dependencies, `.env*`), check `git status` for secrets or large files, then `git add -A && git commit -m "Initial commit"` (use `--allow-empty` in an empty folder).
+   Tell the user in step 2 that you did this. If they don't want git, stop: this workflow can't run without it.
 1. **Plan.** Dispatch `planner` with the goal and the user's constraints. Skip only for a single obvious change. Save the plan, write the briefs, start the ledger with `BASE=$(git rev-parse HEAD)`.
 2. **Confirm.** Show the user the goal, tasks, waves and open questions in a few lines. Wait for approval unless they already said go.
 3. **Execute wave by wave.** Launch all tasks of a wave in ONE message so they run in parallel. Pass each agent its brief path (tell it to read it) - never the whole plan or earlier conversation.
