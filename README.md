@@ -113,6 +113,10 @@ Removes the links, the panel and the marketplace. Agent notes in your projects s
 ```text
 agents/                       dev-team subagent definitions
 skills/dev-team/SKILL.md      the /dev-team orchestration workflow
+skills/linkedin-comment/      LinkedIn comments and replies in your voice
+skills/linkedin-reflection/   LinkedIn posts about a lesson or experience
+skills/linkedin-showcase/     LinkedIn posts about something you built
+skills/linkedin-voice/        shared voice, examples and sources for the three above (not a skill)
 hooks/                        read-only and memory-file guards (+ test.sh)
 bin/agent-memory              agent notes: sizes and worktree sync (Python, stdlib only)
 plugins/dev-team-view/        the progress panel mod
