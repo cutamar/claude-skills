@@ -1,0 +1,14 @@
+{
+  "name": "claude-skills",
+  "description": "Amar's Claude Code skills: a dev team of subagents (/dev-team) and its live progress panel.",
+  "owner": {
+    "name": "Amar Cutura"
+  },
+  "plugins": [
+    {
+      "name": "dev-team-view",
+      "source": "./plugins/dev-team-view",
+      "description": "Live /dev-team progress: a pane with waves, tasks, reviews and rulings, plus a one-line band while a run is active"
+    }
+  ]
+}

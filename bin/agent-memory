@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""agent-memory - look after the dev-team agents' notes.
+
+  agent-memory [list] [repo...]   sizes of each agent's MEMORY.md (default: current folder)
+  agent-memory sync [repo]        copy note lines from agent worktrees back into the repo
+
+Agents keep notes in <repo>/.claude/agent-memory-local/<agent>/MEMORY.md. Worktree
+subagents write them inside .claude/worktrees/<name>/, which is deleted after the run,
+so `/dev-team` runs `sync` after each wave.
+"""
+from __future__ import annotations
+
+import os
+import re
+import sys
+from pathlib import Path
+
+HOME = Path.home()
+NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+MEM_WARN = 180  # Claude loads only the first 200 lines of an agent's MEMORY.md
+
+
+def sync(repo: Path) -> int:
+    added = 0
+    for wt_file in sorted(repo.glob(".claude/worktrees/*/.claude/agent-memory-local/*/MEMORY.md")):
+        if wt_file.is_symlink():
+            continue
+        agent = wt_file.parent.name
+        if not NAME_RE.match(agent):
+            continue
+        main = repo / ".claude/agent-memory-local" / agent / "MEMORY.md"
+        if main.is_symlink():
+            continue
+        main.parent.mkdir(parents=True, exist_ok=True)
+        text = main.read_text() if main.exists() else ""
+        have = text.splitlines()
+        new = [l for l in wt_file.read_text().splitlines()
+               if l.strip().startswith("- ") and l not in have]
+        if new:
+            with main.open("a") as f:
+                if text and not text.endswith("\n"):
+                    f.write("\n")
+                f.write("\n".join(new) + "\n")
+            print(f"+ {agent}: {len(new)} line(s) from {wt_file.parents[3].name}")
+            added += len(new)
+    return added
+
+
+def list_files(roots: list[Path]) -> None:
+    found = False
+    for root in roots:
+        for f in sorted(root.glob(".claude/agent-memory-local/*/MEMORY.md")):
+            found = True
+            lines = len(f.read_text().splitlines())
+            warn = f"  ! over {MEM_WARN} lines - prune it (only 200 are loaded)" if lines > MEM_WARN else ""
+            print(f"{lines:4}  {str(f).replace(str(HOME), '~')}{warn}")
+    if not found:
+        print("no agent memory yet")
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if args and args[0] in ("-h", "--help"):
+        print(__doc__.strip())
+        return
+    action = args.pop(0) if args and args[0] in ("list", "sync") else "list"
+    roots = [Path(a).expanduser().resolve() for a in args] or [Path(os.getcwd()).resolve()]
+    if action == "sync":
+        if len(roots) != 1:
+            sys.exit("agent-memory: sync takes one repo")
+        n = sync(roots[0])
+        print(f"synced {n} line(s) into {roots[0]}" if n else "nothing to sync")
+    else:
+        list_files(roots)
+
+
+if __name__ == "__main__":
+    main()

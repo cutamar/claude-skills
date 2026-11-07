@@ -1,0 +1,7 @@
+# per-project agent notes and dev-team runs
+.claude/agent-memory-local/
+.claude/plans/
+.claude/worktrees/
+__pycache__/
+*.pyc
+node_modules/
